@@ -87,6 +87,16 @@ public class Board {
         }
     }
 
+    public void flipCellValue(int row, int col, Player val) {
+        setCellValue(row, col, val);
+        // decrement the opponent's count
+        if (val == Player.X) {
+            this.oCount -= 1;
+        } else {
+            this.xCount -= 1;
+        }
+    }
+
     /***
      *
      * @param row
@@ -96,24 +106,23 @@ public class Board {
      * called everytime player makes a move, to update adjacent cells
      */
     public void updateCells(int row, int col, Player val) {
-        this.board[row][col] = val;
+        this.setCellValue(row, col, val);
+
         Player adjacent = Player.O;
-
-
         if (val == Player.O) {
             adjacent = Player.X;
         }
 
         // updates coordinate and adjacent coordinates
         for (int i = row - 1; i <= row + 1; i++) {
-            if (validateCoordinate(i, col) && ((i == row || this.board[i][col] == adjacent))) {
-                this.setCellValue(i, col, val);
+            if (validateCoordinate(i, col) && (this.board[i][col] == adjacent)) {
+                this.flipCellValue(i, col, val);
             }
         }
 
         for (int j = col - 1; j <= col + 1; j++) {
-            if (validateCoordinate(row, j) && ((j == col || this.board[row][j] == adjacent))) {
-                this.setCellValue(row, j, val);
+            if (validateCoordinate(row, j) && (this.board[row][j] == adjacent)) {
+                this.flipCellValue(row, j, val);
             }
         }
 
@@ -169,7 +178,9 @@ public class Board {
                 if (this.board[i][j] == null) {
                     Board successor = new Board(this);
                     successor.updateCells(i, j, currPlayer);
-                    successor.evaluate(currPlayer);
+                    System.out.println("X = " + successor.xCount);
+                    System.out.println("O = " + successor.oCount);
+                    System.out.println("Objective value = " + successor.objectiveValue);
                     boards.add(successor);
                 }
             }

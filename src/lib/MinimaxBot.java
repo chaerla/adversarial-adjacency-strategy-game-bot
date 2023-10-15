@@ -13,6 +13,10 @@ public class MinimaxBot extends Bot {
         currentBoard.generateSuccessors(this.player);
         int x = random.nextInt(8);
         int y = random.nextInt(8);
+        while (currentBoard.getBoard()[x][y] != null) {
+            x = random.nextInt(8);
+            y = random.nextInt(8);
+        }
         System.out.println(x + ", " + y);
         return new Coordinate(x, y);
     }
