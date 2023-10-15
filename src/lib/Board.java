@@ -136,6 +136,9 @@ public class Board {
     // for debugging
     public void printBoard() {
         System.out.println("=================================================================");
+        System.out.println("X = " + this.xCount);
+        System.out.println("O = " + this.oCount);
+        System.out.println("Objective value = " + this.objectiveValue);
         for (int i = 0; i < this.getRowSize(); i++) {
             System.out.print("| ");
             for (int j = 0; j < this.getColSize(); j++) {
@@ -178,9 +181,6 @@ public class Board {
                 if (this.board[i][j] == null) {
                     Board successor = new Board(this);
                     successor.updateCells(i, j, currPlayer);
-                    System.out.println("X = " + successor.xCount);
-                    System.out.println("O = " + successor.oCount);
-                    System.out.println("Objective value = " + successor.objectiveValue);
                     boards.add(successor);
                 }
             }
