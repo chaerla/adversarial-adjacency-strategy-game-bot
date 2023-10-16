@@ -50,8 +50,12 @@ public class OutputFrameController {
     private int playerXScore;
     private int playerOScore;
     private int roundsLeft;
-    private boolean isBotFirst;
+    private boolean isPlayerOFirst;
     private Bot bot;
+    private boolean isPlayerXBot;
+    private Bot botX;
+    private Bot botO;
+
 
 
     private static final int ROW = 8;
@@ -67,25 +71,46 @@ public class OutputFrameController {
      * @param name1      Name of Player 1 (Player).
      * @param name2      Name of Player 2 (Bot).
      * @param rounds     The number of rounds chosen to be played.
-     * @param isBotFirst True if bot is first, false otherwise.
+     * @param isPlayerOFirst True if bot is first, false otherwise.
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst) {
+    void getInput(String name1, String name2, String rounds, boolean isPlayerOFirst, String playerXType, String playerOType) {
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
-        this.isBotFirst = isBotFirst;
+        this.isPlayerOFirst = isPlayerOFirst;
         this.boardState = new Board(ROW, COL);
         this.boardState.initialize();
 
-        // Start bot
-        this.bot = new SimulatedAnnealingBot(Player.O);
-        this.playerXTurn = !isBotFirst;
-        if (this.isBotFirst) {
-            this.moveBot();
+        // Check if player X is bot
+        this.isPlayerXBot = !playerXType.equals("Player");
+
+        if (isPlayerXBot) {
+            this.botX = assignBot(playerXType, Player.X);
+        }
+
+        // Player O Bot
+        this.botO = assignBot(playerOType, Player.O);
+        this.playerXTurn = !isPlayerOFirst;
+        if (this.isPlayerOFirst) {
+            this.moveBot(this.botO);
+        } else if (isPlayerXBot){
+            this.moveBot(this.botX);
         }
     }
 
+    private Bot assignBot(String type, Player player) {
+        switch (type) {
+            case "Minimax Bot":
+                return new MinimaxBot(player);
+            case "Simulated Annealing Bot":
+                return new SimulatedAnnealingBot(player);
+            case "Genetic Bot":
+                // return new GeneticBot(player);
+            default:
+                return null;
+        }
+    }
 
     /**
      * Construct the 8x8 game board by creating a total of 64 buttons in a 2
@@ -187,17 +212,17 @@ public class OutputFrameController {
                 this.updateGameBoard(i, j);
                 this.playerXTurn = false;         // Alternate player's turn.
 
-                if (isBotFirst) {
+                if (isPlayerOFirst) {
                     this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have played.
                     this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
                 }
 
-                if (isBotFirst && this.roundsLeft == 0) {
+                if (isPlayerOFirst && this.roundsLeft == 0) {
                     this.endOfGame();
                 }
 
-                // Bot's turn
-                this.moveBot();
+                // Player 0's turn
+                this.moveBot(this.botO);
             } else {
                 this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
                 this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
@@ -208,13 +233,17 @@ public class OutputFrameController {
                 this.updateGameBoard(i, j);
                 this.playerXTurn = true;
 
-                if (!isBotFirst) {
+                if (!isPlayerOFirst) {
                     this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have played.
                     this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
                 }
 
-                if (!isBotFirst && this.roundsLeft == 0) { // Game has terminated.
+                if (!isPlayerOFirst && this.roundsLeft == 0) { // Game has terminated.
                     this.endOfGame();       // Determine & announce the winner.
+                }
+
+                if (isPlayerXBot) {
+                    this.moveBot(this.botX);
                 }
             }
         }
@@ -348,8 +377,8 @@ public class OutputFrameController {
         primaryStage.show();
     }
 
-    private void moveBot() {
-        Coordinate botMove = this.bot.findBestMove(this.boardState);
+    private void moveBot(Bot bot) {
+        Coordinate botMove = bot.findBestMove(this.boardState);
         int i = botMove.getRow();
         int j = botMove.getCol();
 
