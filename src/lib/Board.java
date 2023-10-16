@@ -177,4 +177,17 @@ public class Board {
         return boards;
     }
 
+    public List<Coordinate> getEmptyCoordinates() {
+        List<Coordinate> emptyCoordinates = new ArrayList<Coordinate>();
+
+        for (int i = 0; i < this.rowSize; i++) {
+            for (int j = 0; j < this.colSize; j++) {
+                if (this.board[i][j] == null) {
+                    emptyCoordinates.add(new Coordinate(i, j));
+                }
+            }
+        }
+
+        return emptyCoordinates;
+    }
 }
