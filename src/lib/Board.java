@@ -113,7 +113,7 @@ public class Board {
             adjacent = Player.X;
         }
 
-        // updates coordinate and adjacent coordinates
+        // Updates coordinate and adjacent coordinates
         for (int i = row - 1; i <= row + 1; i++) {
             if (validateCoordinate(i, col) && (this.board[i][col] == adjacent)) {
                 this.flipCellValue(i, col, val);
@@ -126,10 +126,8 @@ public class Board {
             }
         }
 
-        // update the objective value
+        // Update the objective value
         this.evaluate(val);
-
-        printBoard();
     }
 
 
