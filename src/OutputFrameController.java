@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -378,16 +379,20 @@ public class OutputFrameController {
     }
 
     private void moveBot(Bot bot) {
-        Coordinate botMove = bot.findBestMove(this.boardState);
-        int i = botMove.getRow();
-        int j = botMove.getCol();
+        new Thread(() -> {
+            Coordinate botMove = bot.findBestMove(this.boardState);
+            int i = botMove.getRow();
+            int j = botMove.getCol();
 
-        if (!this.buttons[i][j].getText().equals("")) {
-            new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-            System.exit(1);
-            return;
-        }
+            Platform.runLater(() -> {
+                if (!this.buttons[i][j].getText().equals("")) {
+                    new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                    System.exit(1);
+                    return;
+                }
 
-        this.selectedCoordinates(i, j);
+                this.selectedCoordinates(i, j);
+            });
+        }).start();
     }
 }
