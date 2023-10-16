@@ -79,7 +79,7 @@ public class OutputFrameController {
         this.boardState.initialize();
 
         // Start bot
-        this.bot = new MinimaxBot(Player.O);
+        this.bot = new SimulatedAnnealingBot(Player.O);
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
             this.moveBot();
