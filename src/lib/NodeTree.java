@@ -20,6 +20,14 @@ public class NodeTree {
         this.children = new HashMap<>();
     }
 
+    public NodeTree getChild(Coordinate key) {
+        return children.get(key);
+    }
+
+    public boolean childExists(Coordinate key) {
+        return children.containsKey(key);
+    }
+
     public void setValue(double value) {
         this.value = value;
     }
