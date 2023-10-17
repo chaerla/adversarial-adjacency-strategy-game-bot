@@ -8,6 +8,7 @@ public class NodeTree {
     private double value;
     private NodeTree parent;
     private Map<Coordinate, NodeTree> children;
+    private int individualId;
 
     public NodeTree(double value) {
         this.value = value;
@@ -35,5 +36,25 @@ public class NodeTree {
     public void addChildren(double value, Coordinate coordinate) {
         NodeTree children = new NodeTree(value, this);
         this.children.put(coordinate, children);
+    }
+
+    public Map<Coordinate, NodeTree> getChildren() {
+        return children;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public NodeTree getParent() {
+        return parent;
+    }
+
+    public int getIndividualId() {
+        return individualId;
+    }
+
+    public void setIndividualId(int individualId) {
+        this.individualId = individualId;
     }
 }

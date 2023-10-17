@@ -2,10 +2,8 @@ package lib;
 
 import com.sun.org.apache.xpath.internal.patterns.NodeTest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.xml.soap.Node;
+import java.util.*;
 
 public class GeneticBot extends Bot{
 
@@ -25,26 +23,81 @@ public class GeneticBot extends Bot{
             initialPopulation.add(individual);
         }
 
-        NodeTree reservationTree = makeReservationTree(initialPopulation);
+        NodeTree reservationTree = makeReservationTree(initialPopulation, currentBoard);
+        minimaxTreeMax(reservationTree);
+
+        // HARUSNYA FITNESS VALUE INDIVIDU KE-IDX BERADA DI fitnessValues KE-IDX
+        List<Integer> fitnessValues = Arrays.asList(new Integer[POPULATION_SIZE]);
+        calculateFitnessValues(reservationTree, fitnessValues);
 
         return new Coordinate(0,0);
+    }
+
+    private void calculateFitnessValues(NodeTree currentTree, List<Integer> fitnessValues) {
+        if (currentTree.getChildren().size() == 0) {
+            fitnessValues.set(currentTree.getIndividualId(), countFitnessValue(currentTree));
+        } else
+            for (NodeTree child : currentTree.getChildren().values()) {
+                calculateFitnessValues(child, fitnessValues);
+            }
+    }
+
+    private int countFitnessValue(NodeTree currentTree) {
+        int k = 1;
+        while (currentTree.getParent() != null && currentTree.getParent().getValue() == currentTree.getValue()) {
+            currentTree = currentTree.getParent();
+            k++;
+        }
+        return INDIVIDUAL_SIZE - k + 1;
+    }
+
+    private void minimaxTreeMax(NodeTree currentTree) {
+        if (currentTree.getChildren().size() == 0) return;
+
+        double v = Double.MIN_VALUE;
+        List<NodeTree> children = new ArrayList<>(currentTree.getChildren().values());
+
+        for (NodeTree childTree : children) {
+            minimaxTreeMin(childTree);
+            if (childTree.getValue() > v) {
+                v = childTree.getValue();
+            }
+        }
+        currentTree.setValue(v);
+    }
+
+    private void minimaxTreeMin(NodeTree currentTree) {
+        if (currentTree.getChildren().size() == 0) return;
+
+        double v = Double.MIN_VALUE;
+        List<NodeTree> children = new ArrayList<>(currentTree.getChildren().values());
+
+        for (NodeTree childTree : children) {
+            minimaxTreeMax(childTree);
+            v = Math.min(childTree.getValue(), v);
+        }
+        currentTree.setValue(v);
     }
 
     private NodeTree makeReservationTree(Set<List<Coordinate>> population, Board initialBoard) {
         NodeTree nt = new NodeTree(0);
         NodeTree currentNode;
+        List<List<Coordinate>> populationList = new ArrayList<>(population);
 
-        for (List<Coordinate> individual : population) {
+        // ASUMSI: URUTAN ELEMEN DI SET SAMA LIST SELALU SAMA
+        for (int i = 0; i < populationList.size(); i++) {
+            List<Coordinate> individual = populationList.get(i);
             currentNode = nt;
-            for (int i = 0; i < individual.size(); i++) {
-                Coordinate move = individual.get(i);
 
+            for (Coordinate move : individual) {
                 if (!currentNode.childExists(move)) {
-                    currentNode.addChildren(evaluateIndividual(initialBoard, individual), move);
+                    currentNode.addChildren(0, move);
                 }
 
                 currentNode = currentNode.getChild(move);
             }
+            currentNode.setValue(evaluateIndividual(initialBoard, individual));
+            currentNode.setIndividualId(i);
         }
 
         return nt;
