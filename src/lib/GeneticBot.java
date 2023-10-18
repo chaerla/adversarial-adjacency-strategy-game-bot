@@ -5,15 +5,17 @@ import java.util.*;
 public class GeneticBot extends Bot{
 
     private static final double MAX_TIME = 4950;
-    private static final int INDIVIDUAL_SIZE = 10;
     private static final int POPULATION_SIZE = 50;
     private static final int MAX_ITERATIONS = 50;
+    private static final int MAX_IND_SIZE = 10;
+    private int individualSize = MAX_IND_SIZE;
 
     public GeneticBot(Player player) {
         super(player);
     }
     @Override
     public Coordinate findBestMove(Board currentBoard) {
+        this.individualSize = Math.min(MAX_IND_SIZE, currentBoard.getEmptyCoordinates().size());
         Set<List<Coordinate>> initialPopulation = new HashSet<>();
 
         while (initialPopulation.size() < POPULATION_SIZE) {
@@ -34,7 +36,13 @@ public class GeneticBot extends Bot{
             List<Double> percentagePopulation = calculatePercentage(fitnessValues);
 
             List<List<Coordinate>> crossoverResult = crossoverPopulation(population, percentagePopulation);
+            if (crossoverResult.get(0).size() != individualSize) {
+                System.out.println(crossoverResult);
+            }
             List<List<Coordinate>> mutatedResult = mutatePopulation(crossoverResult, currentBoard);
+            if (mutatedResult.get(0).size() != individualSize) {
+                System.out.println(crossoverResult);
+            }
             population = mutatedResult;
         }
         long endTime = System.nanoTime();
@@ -83,11 +91,11 @@ public class GeneticBot extends Bot{
         for (int i = 0; i < crossoverCandidate.size(); i+=2) {
             List<Coordinate> candidate1 = crossoverCandidate.get(i);
             List<Coordinate> candidate2 = crossoverCandidate.get(i + 1);
-            int crossoverPoint = ((int)(Math.random() * (INDIVIDUAL_SIZE - 1))) + 1;
+            int crossoverPoint = ((int)(Math.random() * (individualSize - 1))) + 1;
 
             List<Coordinate> newCandidate1 = new ArrayList<>();
             List<Coordinate> newCandidate2 = new ArrayList<>();
-            for (int j = 0; j < INDIVIDUAL_SIZE; j++) {
+            for (int j = 0; j < individualSize; j++) {
                 if (j >= crossoverPoint) {
                     newCandidate1.add(candidate2.get(j));
                     newCandidate2.add(candidate1.get(j));
@@ -109,22 +117,24 @@ public class GeneticBot extends Bot{
             Board successorBoard = new Board(currentBoard);
             Player currentPlayer = this.player;
 
-            for (int j = 0 ; j< INDIVIDUAL_SIZE; j++) {
+            for (int j = 0; j< individualSize; j++) {
                 successorBoard.updateCells(initialPopulation.get(i).get(j).getRow(), initialPopulation.get(i).get(j).getCol(), currentPlayer);
                 currentPlayer = currentPlayer == Player.O ? Player.X : Player.O;
             }
 
             List<Coordinate> emptyCoordinates = successorBoard.getEmptyCoordinates();
-
-            int mutationIdx = (int)(Math.random() * (INDIVIDUAL_SIZE));
-            int randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
-
             List<Coordinate> mutatedIndividual = initialPopulation.get(i);
-            mutatedIndividual.set(mutationIdx, emptyCoordinates.get(randomIdx));
 
-            while(mutated.contains(mutatedIndividual)) {
-                randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
+            if (emptyCoordinates.size() > 0) {
+                int mutationIdx = (int) (Math.random() * (individualSize));
+                int randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
+
                 mutatedIndividual.set(mutationIdx, emptyCoordinates.get(randomIdx));
+
+                while (mutated.contains(mutatedIndividual)) {
+                    randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
+                    mutatedIndividual.set(mutationIdx, emptyCoordinates.get(randomIdx));
+                }
             }
 
             mutated.add(mutatedIndividual);
@@ -223,7 +233,6 @@ public class GeneticBot extends Bot{
     private List<Coordinate> makeInitialIndividual(Board currentBoard) {
         List<Coordinate> individual = new ArrayList<Coordinate>();
         List<Coordinate> emptyCoordinates = currentBoard.getEmptyCoordinates();
-        int individualSize = Math.min(INDIVIDUAL_SIZE, emptyCoordinates.size());
 
         for (int i = 0; i < individualSize; i++) {
             int idx = (int) (Math.random() * (emptyCoordinates.size()));
