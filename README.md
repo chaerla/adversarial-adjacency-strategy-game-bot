@@ -70,8 +70,8 @@ java -cp ./src --module-path "./javafx-sdk-linux/lib" --add-modules=javafx.contr
 ### Program Instructions
 1. Run the Main class to load the program, and the input window below will pop up. Input the names of Player (X) and Bot (O) into their respective text fields.
 Then, select the number of rounds (a number between 2 and 28) to play using the dropdown menu. You can select whether each player is bot or human and you can also choose the player that goes first.
-<br><br><kbd>
-<img src="https://github.com/ahnjedid/Adjacency-Strategy-Game/blob/master/screenshots/inputScreen.png"></kbd>
+<br><br>
+![image](https://github.com/chaerla/adversarial-adjacency-strategy-game-bot/assets/88904787/2e2f13b4-d06a-4744-98f1-c8095682ecc2)
 <br><br>
 3. Click Play, and the gameboard and scoreboard window will load. The first player starts the game by clicking on an empty button. If it is a Bot, it will calculate the best move and the result will be reflected in the game. Any adjacent O’s will change to X's as a result. 
 4. Then, Player (O) has their turn by also clicking on an empty button. Any adjacent X’s will change to O's as a result. NOTE: This process is counted as 1 round (Player X and O both taking their turns).
