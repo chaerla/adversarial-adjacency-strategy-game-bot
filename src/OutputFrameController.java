@@ -103,7 +103,8 @@ public class OutputFrameController {
     private Bot assignBot(String type, Player player) {
         switch (type) {
             case "Minimax Bot":
-                return new MinimaxBot(player);
+                boolean isFirst = (player == Player.O && this.isPlayerOFirst) || (player == Player.X && !this.isPlayerOFirst);
+                return new MinimaxBot(player, isFirst ? this.roundsLeft * 2 : this.roundsLeft * 2 - 1);
             case "Simulated Annealing Bot":
                 return new SimulatedAnnealingBot(player);
             case "Genetic Bot":
@@ -379,20 +380,22 @@ public class OutputFrameController {
     }
 
     private void moveBot(Bot bot) {
-        new Thread(() -> {
-            Coordinate botMove = bot.findBestMove(this.boardState);
-            int i = botMove.getRow();
-            int j = botMove.getCol();
+        if (boardState.getEmptyCoordinates().size() > 0) {
+            new Thread(() -> {
+                Coordinate botMove = bot.findBestMove(this.boardState);
+                int i = botMove.getRow();
+                int j = botMove.getCol();
 
-            Platform.runLater(() -> {
-                if (!this.buttons[i][j].getText().equals("")) {
-                    new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-                    System.exit(1);
-                    return;
-                }
+                Platform.runLater(() -> {
+                    if (!this.buttons[i][j].getText().equals("")) {
+                        new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                        System.exit(1);
+                        return;
+                    }
 
-                this.selectedCoordinates(i, j);
-            });
-        }).start();
+                    this.selectedCoordinates(i, j);
+                });
+            }).start();
+        }
     }
 }
