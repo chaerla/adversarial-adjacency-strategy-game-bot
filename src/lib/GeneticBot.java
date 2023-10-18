@@ -22,17 +22,50 @@ public class GeneticBot extends Bot{
 
         List<List<Coordinate>> population = new ArrayList<>(initialPopulation);
 
+        long startTime = System.nanoTime();
+        for (int i = 0; i < 1; i++) {
+            NodeTree reservationTree = makeReservationTree(population, currentBoard);
+            minimaxTreeMax(reservationTree);
+
+            List<Integer> fitnessValues = Arrays.asList(new Integer[population.size()]);
+            calculateFitnessValues(reservationTree, fitnessValues);
+
+            List<Double> percentagePopulation = calculatePercentage(fitnessValues);
+
+            List<List<Coordinate>> crossoverResult = crossoverPopulation(population, percentagePopulation);
+            List<List<Coordinate>> mutatedResult = mutatePopulation(crossoverResult, currentBoard);
+            population = mutatedResult;
+        }
+        long endTime = System.nanoTime();
+        long elapsedTime = endTime - startTime;
+        double seconds = (double) elapsedTime / 1_000_000_000.0;
+        System.out.println("Time: " + seconds + " seconds");
+
+        System.out.println();
+
+        List<Coordinate> bestIndividal = getBesIndividual(population, currentBoard);
+
+        return bestIndividal.get(0);
+    }
+
+    private List<Coordinate> getBesIndividual(List<List<Coordinate>> population, Board currentBoard) {
         NodeTree reservationTree = makeReservationTree(population, currentBoard);
         minimaxTreeMax(reservationTree);
 
-        // HARUSNYA FITNESS VALUE INDIVIDU KE-IDX BERADA DI fitnessValues KE-IDX
         List<Integer> fitnessValues = Arrays.asList(new Integer[population.size()]);
         calculateFitnessValues(reservationTree, fitnessValues);
 
-        List<Double> percentagePopulation = calculatePercentage(fitnessValues);
+        int maxFV = Integer.MIN_VALUE;
+        int maxIdx = -1;
+        for (int i = 0; i < fitnessValues.size(); i++) {
+            int num = fitnessValues.get(i);
+            if (num > maxFV) {
+                maxFV = num;
+                maxIdx = i;
+            }
+        }
 
-
-        return new Coordinate(0,0);
+        return population.get(maxIdx);
     }
 
     private List<List<Coordinate>> crossoverPopulation(List<List<Coordinate>> initialPopulation, List<Double> percentages) {
@@ -49,7 +82,7 @@ public class GeneticBot extends Bot{
         for (int i = 0; i < crossoverCandidate.size(); i+=2) {
             List<Coordinate> candidate1 = crossoverCandidate.get(i);
             List<Coordinate> candidate2 = crossoverCandidate.get(i + 1);
-            int crossoverPoint = (int)(Math.random() * (INDIVIDUAL_SIZE - 2) + 1);
+            int crossoverPoint = ((int)(Math.random() * (INDIVIDUAL_SIZE - 1))) + 1;
 
             List<Coordinate> newCandidate1 = new ArrayList<>();
             List<Coordinate> newCandidate2 = new ArrayList<>();
@@ -65,6 +98,38 @@ public class GeneticBot extends Bot{
             crossoverCandidate.set(i + 1, newCandidate2);
         }
         return crossoverCandidate;
+    }
+
+    private List<List<Coordinate>> mutatePopulation(List<List<Coordinate>> initialPopulation, Board currentBoard) {
+        Set<List<Coordinate>> mutated = new HashSet<>();
+
+        for (int i = 0; i < initialPopulation.size(); i++) {
+            Board successorBoard = new Board(currentBoard);
+            Player currentPlayer = this.player;
+
+            for (int j = 0 ; j< INDIVIDUAL_SIZE; j++) {
+                successorBoard.updateCells(initialPopulation.get(i).get(j).getRow(), initialPopulation.get(i).get(j).getCol(), currentPlayer);
+                currentPlayer = currentPlayer == Player.O ? Player.X : Player.O;
+            }
+
+            List<Coordinate> emptyCoordinates = successorBoard.getEmptyCoordinates();
+
+            int mutationIdx = (int)(Math.random() * (INDIVIDUAL_SIZE));
+            int randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
+
+            List<Coordinate> mutatedIndividual = initialPopulation.get(i);
+            mutatedIndividual.set(mutationIdx, emptyCoordinates.get(randomIdx));
+
+            while(mutated.contains(mutatedIndividual)) {
+                randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
+                mutatedIndividual.set(mutationIdx, emptyCoordinates.get(randomIdx));
+            }
+
+            mutated.add(mutatedIndividual);
+        }
+
+        List<List<Coordinate>> mutatedPopulation = new ArrayList<>(mutated);
+        return mutatedPopulation;
     }
 
     private List<Double> calculatePercentage(List<Integer> fitnessValues) {
@@ -83,6 +148,7 @@ public class GeneticBot extends Bot{
 
     private void calculateFitnessValues(NodeTree currentTree, List<Integer> fitnessValues) {
         if (currentTree.getChildren().size() == 0) {
+            System.out.println(currentTree.getIndividualId());
             fitnessValues.set(currentTree.getIndividualId(), countFitnessValue(currentTree));
         } else
             for (NodeTree child : currentTree.getChildren().values()) {
@@ -155,7 +221,7 @@ public class GeneticBot extends Bot{
         int individualSize = Math.min(INDIVIDUAL_SIZE, emptyCoordinates.size());
 
         for (int i = 0; i < individualSize; i++) {
-            int idx = (int) (Math.random() * (emptyCoordinates.size() - 1));
+            int idx = (int) (Math.random() * (emptyCoordinates.size()));
             individual.add(emptyCoordinates.get(idx));
             emptyCoordinates.remove(idx);
         }
