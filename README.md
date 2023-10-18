@@ -10,6 +10,18 @@ The “Adjacency” program was designed as an interactive and strategic board g
 
 The initial game starts with 4 X’s in the bottom left corner and 4 O’s in the top right corner.  The first player will begin by placing an X on an empty square (through clicking).  In turn, all O’s that are on adjacent squares are then replaced with X’s.  Play will continue with the second player taking his turn by placing an O on an empty square.  In turn, all X’s that are on adjacent squares are then replaced with O’s.
 
+This is an extended version of the game where the games has Bots implemented to play the game.
+On game initialization, the user can choose either `Bot` or `Human` as player X and player O.
+The game has 2 three types of Bot implemented:
+
+#### Minimax Bot
+This bot implements the minimax algorithm with alpha-beta pruning. It iterates all possible moves until it reaches a maximum depth defined in the app. This bot works by assuming that the opponent works optimally as well.
+
+#### Local Search Bot
+This bot implements a local search algorithm, simulated annealing to find the best move. It works by randomizing possible paths taken by player and both then chooses the best one by taking the _instantaneous benefit_ and _feature benefit_ (based on objective function) into consideration.
+
+#### Genetic Algorithm Bot
+This bot implements genetic algorithm to find the best solution.
 <hr>
 
 ### Installation (IntelliJ)
@@ -57,19 +69,40 @@ java -cp ./src --module-path "./javafx-sdk-linux/lib" --add-modules=javafx.contr
 
 ### Program Instructions
 1. Run the Main class to load the program, and the input window below will pop up. Input the names of Player (X) and Bot (O) into their respective text fields.
-Then, select the number of rounds (a number between 2 and 28) to play using the dropdown menu.
-You can make the Bot start first.
+Then, select the number of rounds (a number between 2 and 28) to play using the dropdown menu. You can select whether each player is bot or human and you can also choose the player that goes first.
 <br><br><kbd>
 <img src="https://github.com/ahnjedid/Adjacency-Strategy-Game/blob/master/screenshots/inputScreen.png"></kbd>
 <br><br>
-2. Click Play, and the gameboard and scoreboard window will load. Player (X) starts the game by clicking on an empty button. Any adjacent O’s will change to X's as a result. 
-3. Then, Bot (O) has their turn by also clicking on an empty button. Any adjacent X’s will change to O's as a result. NOTE: This process is counted as 1 round (Player and Bot both taking their turns).
-4. The game will continue until there are no more rounds left to play. In the end, the player with the greater number of letters is the winner of the game.
+3. Click Play, and the gameboard and scoreboard window will load. The first player starts the game by clicking on an empty button. If it is a Bot, it will calculate the best move and the result will be reflected in the game. Any adjacent O’s will change to X's as a result. 
+4. Then, Player (O) has their turn by also clicking on an empty button. Any adjacent X’s will change to O's as a result. NOTE: This process is counted as 1 round (Player X and O both taking their turns).
+5. The game will continue until there are no more rounds left to play. In the end, the player with the greater number of letters is the winner of the game.
 <kbd>
   <img src="https://github.com/ahnjedid/Adjacency-Strategy-Game/blob/master/screenshots/endOfGame.png">
 </kbd>
 
 <hr>
+
+### Experiment With Bots
+
+#### Human vs Minimax Bot
+
+#### Human vs Simulated Annealing Bot
+
+#### Human vs GA Bot
+
+#### MinimaxBot vs Simulated Annealing Bot
+
+#### GA Bot vs Minimax Bot
+
+#### GA Bot vs Simulated Annealing Bot
+
+####
+
+### Bot Authors
+1. Rachel Gabriela Chen 13521044
+2. Jeffrey Chow 13521046
+3. Angela Livia Arumsari 13521094
+4. Rinaldy Adin 13521134
 
 ### Notes
 <ul>
