@@ -5,8 +5,8 @@ import java.util.*;
 public class GeneticBot extends Bot{
 
     private static final double MAX_TIME = 4950;
-    private static final int POPULATION_SIZE = 50;
-    private static final int MAX_ITERATIONS = 50;
+    private static final int POPULATION_SIZE = 100;
+    private static final int MAX_ITERATIONS = 1000;
     private static final int MAX_IND_SIZE = 10;
     private int individualSize = MAX_IND_SIZE;
 
@@ -24,6 +24,7 @@ public class GeneticBot extends Bot{
         }
 
         List<List<Coordinate>> population = new ArrayList<>(initialPopulation);
+
 
         long startTime = System.nanoTime();
         for (int i = 0; i < MAX_ITERATIONS; i++) {
@@ -89,6 +90,10 @@ public class GeneticBot extends Bot{
             }
         }
         for (int i = 0; i < crossoverCandidate.size(); i+=2) {
+            if (i+1 > crossoverCandidate.size()-1) {
+                break;
+            }
+
             List<Coordinate> candidate1 = crossoverCandidate.get(i);
             List<Coordinate> candidate2 = crossoverCandidate.get(i + 1);
             int crossoverPoint = ((int)(Math.random() * (individualSize - 1))) + 1;
