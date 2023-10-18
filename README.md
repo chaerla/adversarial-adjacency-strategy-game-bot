@@ -85,12 +85,15 @@ Then, select the number of rounds (a number between 2 and 28) to play using the 
 ### Experiment With Bots
 
 #### Human vs Minimax Bot
+![image](https://github.com/chaerla/adversarial-adjacency-strategy-game-bot/assets/91037907/267d44c6-0cea-4a5a-987a-6587152a2422)
 
 #### Human vs Simulated Annealing Bot
+![image](https://github.com/chaerla/adversarial-adjacency-strategy-game-bot/assets/91037907/ece7f3ea-5091-4147-94c9-5a9a6fcab57b)
 
 #### Human vs GA Bot
 
 #### MinimaxBot vs Simulated Annealing Bot
+![image](https://github.com/chaerla/adversarial-adjacency-strategy-game-bot/assets/91037907/04acba52-4e71-4762-980e-26d5e6a89fba)
 
 #### GA Bot vs Minimax Bot
 
