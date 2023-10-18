@@ -11,9 +11,11 @@ public class MinimaxBot extends Bot {
     private final int TIME_PER_VISIT = 50; // microseconds
     private long visitCount = 0;
     private int initialEmptyCnt = 0;
+    private int movesLeft;
 
-    public MinimaxBot(Player player) {
+    public MinimaxBot(Player player, int movesLeft) {
         super(player);
+        this.movesLeft = movesLeft;
     }
 
     @Override
@@ -56,13 +58,15 @@ public class MinimaxBot extends Bot {
         long duration = (endTime - startTime) / 1000;
         double durationInSeconds = duration / 1000000.0;
 
-        System.out.println("===== VISIT COUNT =====");
-        System.out.println("Visit Count: " + visitCount);
-        System.out.printf("Duration: %.2f seconds%n", durationInSeconds);
-        System.out.println("Empty Cells: " + currentBoard.getEmptyCoordinates().size());
-        if (visitCount != 0)
-            System.out.println("Time per visit: " + (duration / visitCount) + " micro second");
-        System.out.println("MAX DEPTH: " + maxDepth);
+//        System.out.println("===== VISIT COUNT =====");
+//        System.out.println("Visit Count: " + visitCount);
+//        System.out.printf("Duration: %.2f seconds%n", durationInSeconds);
+//        System.out.println("Empty Cells: " + currentBoard.getEmptyCoordinates().size());
+//        if (visitCount != 0)
+//            System.out.println("Time per visit: " + (duration / visitCount) + " micro second");
+//        System.out.println("MAX DEPTH: " + maxDepth);
+
+        this.movesLeft -= 2;
 
         return bestMove;
     }
@@ -105,6 +109,10 @@ public class MinimaxBot extends Bot {
     }
 
     private boolean cutoff(Board state, int depth) {
+        if (depth == movesLeft) {
+            maxDepth = depth;
+            return true;
+        }
         if (state.getEmptyCoordinates().size() == 0) {
             maxDepth = depth;
             return true;
