@@ -3,8 +3,6 @@ package lib;
 import java.util.*;
 
 public class GeneticBot extends Bot{
-
-    private static final double MAX_TIME = 4950;
     private static final int POPULATION_SIZE = 100;
     private static final int MAX_ITERATIONS = 1000;
     private static final int MAX_IND_SIZE = 10;
@@ -16,6 +14,14 @@ public class GeneticBot extends Bot{
     @Override
     public Coordinate findBestMove(Board currentBoard) {
         this.individualSize = Math.min(MAX_IND_SIZE, currentBoard.getEmptyCoordinates().size());
+
+        List<Coordinate> emptyCoordinates = currentBoard.getEmptyCoordinates();
+
+        if (individualSize <= 3) {
+            int idx = (int) (Math.random() * (emptyCoordinates.size()));
+            return emptyCoordinates.get(idx);
+        }
+
         Set<List<Coordinate>> initialPopulation = new HashSet<>();
 
         while (initialPopulation.size() < POPULATION_SIZE) {
@@ -25,8 +31,6 @@ public class GeneticBot extends Bot{
 
         List<List<Coordinate>> population = new ArrayList<>(initialPopulation);
 
-
-        long startTime = System.nanoTime();
         for (int i = 0; i < MAX_ITERATIONS; i++) {
             NodeTree reservationTree = makeReservationTree(population, currentBoard);
             minimaxTreeMax(reservationTree);
@@ -46,12 +50,6 @@ public class GeneticBot extends Bot{
             }
             population = mutatedResult;
         }
-        long endTime = System.nanoTime();
-        long elapsedTime = endTime - startTime;
-        double seconds = (double) elapsedTime / 1_000_000_000.0;
-        System.out.println("Time: " + seconds + " seconds");
-
-        System.out.println();
 
         List<Coordinate> besIndividual = getBestIndividual(population, currentBoard);
 
@@ -130,7 +128,7 @@ public class GeneticBot extends Bot{
             List<Coordinate> emptyCoordinates = successorBoard.getEmptyCoordinates();
             List<Coordinate> mutatedIndividual = initialPopulation.get(i);
 
-            if (emptyCoordinates.size() > 0) {
+            if (emptyCoordinates.size() > 6) {
                 int mutationIdx = (int) (Math.random() * (individualSize));
                 int randomIdx = (int) (Math.random() * (emptyCoordinates.size()));
 
