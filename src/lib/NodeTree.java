@@ -8,7 +8,7 @@ public class NodeTree {
     private int value;
     private NodeTree parent;
     private Map<Coordinate, NodeTree> children;
-    private int individualId;
+    private int individualId = -1;
 
     public NodeTree(int value) {
         this.value = value;

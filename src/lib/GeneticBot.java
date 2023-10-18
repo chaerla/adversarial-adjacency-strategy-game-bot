@@ -5,8 +5,9 @@ import java.util.*;
 public class GeneticBot extends Bot{
 
     private static final double MAX_TIME = 4950;
-    private static final int INDIVIDUAL_SIZE = 5;
+    private static final int INDIVIDUAL_SIZE = 10;
     private static final int POPULATION_SIZE = 50;
+    private static final int MAX_ITERATIONS = 50;
 
     public GeneticBot(Player player) {
         super(player);
@@ -23,7 +24,7 @@ public class GeneticBot extends Bot{
         List<List<Coordinate>> population = new ArrayList<>(initialPopulation);
 
         long startTime = System.nanoTime();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < MAX_ITERATIONS; i++) {
             NodeTree reservationTree = makeReservationTree(population, currentBoard);
             minimaxTreeMax(reservationTree);
 
@@ -43,12 +44,12 @@ public class GeneticBot extends Bot{
 
         System.out.println();
 
-        List<Coordinate> bestIndividal = getBesIndividual(population, currentBoard);
+        List<Coordinate> besIndividual = getBestIndividual(population, currentBoard);
 
-        return bestIndividal.get(0);
+        return besIndividual.get(0);
     }
 
-    private List<Coordinate> getBesIndividual(List<List<Coordinate>> population, Board currentBoard) {
+    private List<Coordinate> getBestIndividual(List<List<Coordinate>> population, Board currentBoard) {
         NodeTree reservationTree = makeReservationTree(population, currentBoard);
         minimaxTreeMax(reservationTree);
 
@@ -71,9 +72,9 @@ public class GeneticBot extends Bot{
     private List<List<Coordinate>> crossoverPopulation(List<List<Coordinate>> initialPopulation, List<Double> percentages) {
         List<List<Coordinate>> crossoverCandidate = new ArrayList<>();
         for (int i = 0; i < initialPopulation.size(); i++) {
-            int randomCrossover = (int)(Math.random() * 100);
+            double randomCrossover = Math.random();
             for (int j = 0; j < percentages.size(); j++) {
-                if (randomCrossover < percentages.get(i)) {
+                if (randomCrossover < percentages.get(j)) {
                     crossoverCandidate.add(initialPopulation.get(j));
                     break;
                 }
@@ -87,11 +88,12 @@ public class GeneticBot extends Bot{
             List<Coordinate> newCandidate1 = new ArrayList<>();
             List<Coordinate> newCandidate2 = new ArrayList<>();
             for (int j = 0; j < INDIVIDUAL_SIZE; j++) {
-                newCandidate1.add(candidate1.get(i));
-                newCandidate2.add(candidate2.get(i));
                 if (j >= crossoverPoint) {
-                    newCandidate1.add(candidate2.get(i));
-                    newCandidate2.add(candidate1.get(i));
+                    newCandidate1.add(candidate2.get(j));
+                    newCandidate2.add(candidate1.get(j));
+                } else {
+                    newCandidate1.add(candidate1.get(j));
+                    newCandidate2.add(candidate2.get(j));
                 }
             }
             crossoverCandidate.set(i, newCandidate1);
@@ -133,7 +135,7 @@ public class GeneticBot extends Bot{
     }
 
     private List<Double> calculatePercentage(List<Integer> fitnessValues) {
-        int sumValue = fitnessValues.stream().reduce(0, (a, b) -> a + b);
+        int sumValue = fitnessValues.stream().reduce(0, Integer::sum);
         List<Double> percentages = new ArrayList<>();
 
         for (int i = 0; i < fitnessValues.size(); i++) {
@@ -148,7 +150,6 @@ public class GeneticBot extends Bot{
 
     private void calculateFitnessValues(NodeTree currentTree, List<Integer> fitnessValues) {
         if (currentTree.getChildren().size() == 0) {
-            System.out.println(currentTree.getIndividualId());
             fitnessValues.set(currentTree.getIndividualId(), countFitnessValue(currentTree));
         } else
             for (NodeTree child : currentTree.getChildren().values()) {
@@ -166,7 +167,9 @@ public class GeneticBot extends Bot{
     }
 
     private void minimaxTreeMax(NodeTree currentTree) {
-        if (currentTree.getChildren().size() == 0) return;
+        if (currentTree.getChildren().size() == 0) {
+            return;
+        }
 
         int v = Integer.MIN_VALUE;
         List<NodeTree> children = new ArrayList<>(currentTree.getChildren().values());
@@ -181,7 +184,9 @@ public class GeneticBot extends Bot{
     }
 
     private void minimaxTreeMin(NodeTree currentTree) {
-        if (currentTree.getChildren().size() == 0) return;
+        if (currentTree.getChildren().size() == 0) {
+            return;
+        }
 
         int v = Integer.MIN_VALUE;
         List<NodeTree> children = new ArrayList<>(currentTree.getChildren().values());
