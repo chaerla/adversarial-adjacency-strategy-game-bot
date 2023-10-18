@@ -5,17 +5,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NodeTree {
-    private double value;
+    private int value;
     private NodeTree parent;
     private Map<Coordinate, NodeTree> children;
     private int individualId;
 
-    public NodeTree(double value) {
+    public NodeTree(int value) {
         this.value = value;
         this.children = new HashMap<>();
     }
 
-    public NodeTree(double value, NodeTree parent) {
+    public NodeTree(int value, NodeTree parent) {
         this.value = value;
         this.parent = parent;
         this.children = new HashMap<>();
@@ -29,11 +29,11 @@ public class NodeTree {
         return children.containsKey(key);
     }
 
-    public void setValue(double value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public void addChildren(double value, Coordinate coordinate) {
+    public void addChildren(int value, Coordinate coordinate) {
         NodeTree children = new NodeTree(value, this);
         this.children.put(coordinate, children);
     }
@@ -42,7 +42,7 @@ public class NodeTree {
         return children;
     }
 
-    public double getValue() {
+    public int getValue() {
         return value;
     }
 
