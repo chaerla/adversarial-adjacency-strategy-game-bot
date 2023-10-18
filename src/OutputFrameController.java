@@ -108,7 +108,7 @@ public class OutputFrameController {
             case "Simulated Annealing Bot":
                 return new SimulatedAnnealingBot(player);
             case "Genetic Bot":
-                // return new GeneticBot(player);
+                return new GeneticBot(player);
             default:
                 return null;
         }
